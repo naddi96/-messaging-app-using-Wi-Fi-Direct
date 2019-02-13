@@ -1,10 +1,13 @@
 package com.example.naddi.wifip2p2tesi;
 
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.wifi.WifiManager;
@@ -16,6 +19,7 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.view.View;
@@ -48,6 +52,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int PERMISSIONS_REQUEST_CODE_ACCESS_FINE_LOCATION =1 ;
     int backView = R.layout.activity_main;
     Database myDb;
     Button btnOnOff, btnDiscover, btnSend,btnCripto, btnConver;
@@ -94,7 +99,13 @@ public class MainActivity extends AppCompatActivity {
         sendReceive = new SendReceive(MESSAGE_READ,handler);
         initialWork();
         exqListener();
+
     }
+
+
+
+
+
 
 
     //-------------------------handler del messaggio ricevuto----------------------------------------
@@ -106,6 +117,9 @@ public class MainActivity extends AppCompatActivity {
                     byte[] readBuff = (byte[]) msg.obj;
                     String tempMsg = new String (readBuff,0,msg.arg1);
                     WifiP2pConfig config = new WifiP2pConfig();
+
+
+
                     if(tempMsg.length()>16 &&tempMsg.substring(0,4).equals("MAC:") ){
                         currentMacConnect = tempMsg.substring(4,21);
                         currentNameConnect = tempMsg.substring(7,tempMsg.lastIndexOf(">")-1);
@@ -123,15 +137,12 @@ public class MainActivity extends AppCompatActivity {
                         try{
                             updateChatMex();
                         }catch (Exception e){}
-
                     }else{
                         String mex =cript.decript(tempMsg);
                         myDb.insertMessage(currentMacConnect,mex);
                         updateChatMex();
                         Toast.makeText(getApplicationContext(),tempMsg,Toast.LENGTH_SHORT).show();
-
                     }
-
                     Toast.makeText(getApplicationContext(),tempMsg,Toast.LENGTH_SHORT).show();
                    // myDb.insertMessage();
                     break;
@@ -139,6 +150,27 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
     });
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 0x12345) {
+            for (int grantResult : grantResults) {
+                if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+            }
+            //getWifi();
+        }
+    }
+    @TargetApi(23)
+    public boolean requ(){
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_CODE_ACCESS_FINE_LOCATION);                    // Get the result in onRequestPermissionsResult(int, String[], int[])
+        } else {
+            return true;
+        }
+        return false;
+    }
 
     private void exqListener() {
         btnOnOff.setOnClickListener(new OnClickListener() {
@@ -146,28 +178,44 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(wifimanager.isWifiEnabled()){
                     wifimanager.setWifiEnabled(false);
-                    btnOnOff.setText("WIFI ACCESSO");
+                    btnOnOff.setText("TURN ON WIFI");
                 }else{
                     wifimanager.setWifiEnabled(true);
-                    btnOnOff.setText("WIFI SPENTO");
+                    btnOnOff.setText("TURN OFF WIFI");
                 }
             }
         });
+
+
+
         btnDiscover.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                mManager.discoverPeers(mChanel, new WifiP2pManager.ActionListener() {
-                    @Override
-                    public void onSuccess() {
-                        connectionsStatus.setText("Discovery Started");
-                    }
 
-                    @Override
-                    public void onFailure(int i) {
-                        connectionsStatus.setText("Discovery start fail");
-                    }
-                });
-            }
+
+                requ();
+
+
+
+                    mManager.discoverPeers(mChanel, new WifiP2pManager.ActionListener() {
+                        @Override
+                        public void onSuccess() {
+                            connectionsStatus.setText("Discovery Started");
+                        }
+
+                        @Override
+                        public void onFailure(int i) {
+                            connectionsStatus.setText("Discovery start fail");
+                        }
+                    });
+
+
+                }
+
+
+
+
+
         });
 
 
@@ -182,7 +230,8 @@ public class MainActivity extends AppCompatActivity {
                 mManager.connect(mChanel,config,new WifiP2pManager.ActionListener() {
                     @Override
                     public void onSuccess() {
-                        Toast.makeText(getApplicationContext(),"connected to"+device.deviceName+"  mac"+device.deviceAddress,Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"connected to"+device.deviceName+
+                                "  mac"+device.deviceAddress,Toast.LENGTH_SHORT).show();
                         currentMacConnect = device.deviceAddress;
                         currentNameConnect = device.deviceName;
                     }
@@ -211,14 +260,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 */
-        btnCripto.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Cript x = new Cript();
-                //System.out.println(x.prikey);
-                //System.out.println(x.pubkey);
-            }
-        });
 
 
 
@@ -230,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
                 conversList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
                         Cursor peers = myDb.getPeers();
                         int x=0;
                         while(peers.moveToNext()){
@@ -280,7 +322,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void initialWork() {
         btnConver = findViewById(R.id.conversazioni);
-        btnCripto = findViewById(R.id.cripto);
         btnOnOff = findViewById(R.id.onOff);
         btnDiscover = findViewById(R.id.discover);
      //   btnSend = findViewById(R.id.sendButton);
@@ -298,6 +339,13 @@ public class MainActivity extends AppCompatActivity {
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+        if(wifimanager.isWifiEnabled()){
+
+            btnOnOff.setText("TURN OFF WIFI");
+        }else{
+
+            btnOnOff.setText("TURN ON WIFI");
+        }
 
     }
 
@@ -310,6 +358,33 @@ public class MainActivity extends AppCompatActivity {
         mexText = findViewById(R.id.mexText);
         btnSend = findViewById(R.id.sendChat);
         chatList = findViewById(R.id.chatList);
+        Button connect = findViewById(R.id.connect);
+
+
+        connect.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                WifiP2pConfig config = new WifiP2pConfig();
+                config.deviceAddress = currentMacConnect;
+                System.out.print(currentMacConnect);
+
+                mManager.connect(mChanel,config,new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(getApplicationContext(),"connected to"+currentMacConnect,Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onFailure(int i) {
+                        Toast.makeText(getApplicationContext(),"not connected",Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+
+
+            }
+        });
 
         btnSend.setOnClickListener(new OnClickListener() {
             @Override
@@ -317,7 +392,6 @@ public class MainActivity extends AppCompatActivity {
                 String msg = mexText.getText().toString();
                 // Toast.makeText(getApplicationContext(),msg.getBytes().toString(),Toast.LENGTH_SHORT).show();
                 try{
-
 
                     String msgcript = cript.encript(msg);
                     sendReceive.write(msgcript.getBytes());
@@ -345,17 +419,15 @@ public class MainActivity extends AppCompatActivity {
     WifiP2pManager.PeerListListener peerListListener= new WifiP2pManager.PeerListListener() {
         @Override
         public void onPeersAvailable(WifiP2pDeviceList peerList) {
-            if(!peerList.getDeviceList().equals(peers)){
+            if( !peerList.getDeviceList().equals(peers)){
                 peers.clear();
                 peers.addAll(peerList.getDeviceList());
                 deviceNameArray= new String[peerList.getDeviceList().size()];
                 deviceArray = new WifiP2pDevice[peerList.getDeviceList().size()];
                 int index = 0;
-
                 for(WifiP2pDevice device : peerList.getDeviceList()){
                     deviceNameArray[index]= device.deviceAddress+"  "+device.deviceName;
                     deviceArray[index]=device;
-
                     myDb.insertPeers(device.deviceAddress,device.deviceName);
                     index++;
                 }
@@ -373,7 +445,6 @@ public class MainActivity extends AppCompatActivity {
             if (peers.size()==0){
                 Toast.makeText(getApplicationContext(),"no device found",Toast.LENGTH_SHORT).show();
             }
-
         }
     };
 
@@ -391,17 +462,11 @@ public class MainActivity extends AppCompatActivity {
             if(wifiP2pInfo.groupFormed && wifiP2pInfo.isGroupOwner){
 
                 connectionsStatus.setText("host");
-                //sendReceive = new SendReceive(MESSAGE_READ,handler);
                 serverClass=new ServerClass(sendReceive);
-
                 serverClass.start();
                 Toast.makeText(getApplicationContext(),"host",Toast.LENGTH_SHORT).show();
-                // serverClass.run();
-
-
             }else if (wifiP2pInfo.groupFormed){
                // sendReceive = new SendReceive(MESSAGE_READ,handler);
-
                 connectionsStatus.setText("client");
 
                 clientClass = new ClientClass(groupOwnwerAndres,sendReceive);
@@ -409,9 +474,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"client",Toast.LENGTH_SHORT).show();
             }
 
+
              Handler handler = new Handler();
-
-
              handler.postDelayed(new Runnable() {
                  public void run() {
                      try{
@@ -455,7 +519,6 @@ public class MainActivity extends AppCompatActivity {
             final String mex = mexs.getString(mexs.getColumnIndex("mex"));
             list[i]= mex;
             i++;
-
         }
         final Myadapter adapter = new Myadapter(this,list);
         chatList.setAdapter(adapter);

@@ -48,9 +48,6 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
 
                 mManager.requestPeers(mChannel,mActivity.peerListListener);
             }
-
-
-
             //dooo
             // WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION
         }else if(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)){
@@ -64,7 +61,7 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
                 mManager.requestConnectionInfo(mChannel,mActivity.connectionInfoListener);
 
             }else{
-                mActivity.connectionsStatus.setText("it's a disconect");
+               // mActivity.connectionsStatus.setText("it's a disconect");
             }
 
         }else if(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)){

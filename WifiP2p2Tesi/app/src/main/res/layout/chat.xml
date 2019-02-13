@@ -26,49 +26,43 @@
 
     <ListView
         android:id="@+id/chatList"
-        android:divider="@null"
-        android:layout_width="365dp"
-        android:layout_height="389dp"
+        android:layout_width="match_parent"
+        android:layout_height="375dp"
         android:layout_above="@+id/mexText"
-        android:layout_below="@+id/connectionStatus"
+        android:layout_below="@+id/connect"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="9dp"
-        android:layout_marginBottom="29dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="20dp"
+        android:divider="@null"
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="82dp" />
 
     <Button
         android:id="@+id/reconnectionButton"
-        android:layout_width="267dp"
+        android:layout_width="174dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="55dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="62dp"
+        android:layout_marginStart="203dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:text="disconnect"
         tools:layout_editor_absoluteX="9dp"
         tools:layout_editor_absoluteY="0dp" />
 
 
-    <TextView
-        android:id="@+id/connectionStatus"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/connect"
+        android:layout_width="114dp"
         android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/reconnectionButton"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="55dp"
-        android:text="Connection Status"
-        android:textAlignment="center"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="18sp"
-        android:textStyle="italic"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="57dp" />
+        android:layout_marginStart="17dp"
+        android:layout_marginTop="-2dp"
+        android:text="connect" />
 
 </RelativeLayout>

@@ -23,31 +23,28 @@ public class Cript{
 
     public PublicKey pubkey;
     public PrivateKey prikey;
-
     public PublicKey hispub;
 
 
 
-
     public void setHisKey(String hispub) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        byte [] pub= Base64.decode(hispub,Base64.DEFAULT);
+        byte[] pub = Base64.decode(hispub, Base64.DEFAULT);
         X509EncodedKeySpec spec = new X509EncodedKeySpec(pub);
         java.security.KeyFactory fact = java.security.KeyFactory.getInstance("EC");
         this.hispub = fact.generatePublic(spec);
-        System.out.println(this.hispub.toString());
     }
+        //   System.out.println(this.hispub.toString());}
 
 
 
     public Cript() {
         try {
             ECGenParameterSpec ecParamSpec = new ECGenParameterSpec("secp224k1");
-            KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC","SC");// KeyPairGenerator.getInstance("ECDH","SC");
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC","SC");                                                                                                                     // KeyPairGenerator.getInstance("ECDH","SC");
             kpg.initialize(ecParamSpec);
             KeyPair kpair=kpg.generateKeyPair();
             pubkey = kpair.getPublic();
             prikey = kpair.getPrivate();
-
         }
         catch(Exception e)
         {
@@ -69,7 +66,6 @@ public class Cript{
             e.printStackTrace();
             return "errore";
         }
-
     }
 
     public String encript(String mex){
@@ -79,13 +75,11 @@ public class Cript{
             byte[] message = mex.getBytes("UTF-8");
             byte[] ciphertext = ecies.doFinal(message);
             return  Base64.encodeToString( ciphertext,0 );
-            //return new String(ciphertext, "UTF-8");
 
         }catch (Exception e){
             e.printStackTrace();
             return "errore";
         }
-
     }
 
 

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-
 public class SendReceive extends Thread{
     private Socket socket;
     private InputStream inputStream;
@@ -17,9 +16,9 @@ public class SendReceive extends Thread{
 
     public SendReceive(int MESSAGE_READ,Handler handler){
         this.handler = handler;
-
         this.MESSAGE_READ = MESSAGE_READ;
     }
+
 
     public void setSocket(Socket skt){
         socket = skt;
@@ -29,12 +28,12 @@ public class SendReceive extends Thread{
         }catch (IOException e){
             e.printStackTrace();
         }
-
-
     }
 
     @Override
     public void run(){
+
+
         byte[] buffer = new byte[1024];
         int bytes ;
 
@@ -49,8 +48,8 @@ public class SendReceive extends Thread{
 
             }
         }
-
     }
+
 
     public void write(final byte[] bytes) {
         new Thread(new Runnable(){

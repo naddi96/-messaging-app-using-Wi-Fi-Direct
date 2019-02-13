@@ -6,23 +6,38 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <TextView
+        android:id="@+id/connectionStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="3dp"
+        android:text="Connection Status"
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_blue_dark"
+        android:textSize="18sp"
+        android:textStyle="italic" />
+
     <Button
         android:id="@+id/onOff"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="55dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="38dp"
         android:text="Wifi On" />
 
     <Button
         android:id="@+id/discover"
-        android:layout_width="wrap_content"
+        android:layout_width="152dp"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/peerListView"
         android:layout_alignBaseline="@+id/onOff"
-        android:layout_alignBottom="@+id/onOff"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="12dp"
         android:text="discover" />
 
     <ListView
@@ -32,31 +47,9 @@
         android:layout_below="@+id/onOff"
         android:layout_alignParentStart="true"
         android:layout_marginStart="0dp"
-        android:layout_marginTop="19dp"
+        android:layout_marginTop="12dp"
         android:background="@android:color/transparent"
         android:scrollbars="vertical" />
-
-    <TextView
-        android:id="@+id/connectionStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="15dp"
-        android:text="Connection Status"
-        android:textAlignment="center"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="18sp"
-        android:textStyle="italic" />
-
-    <Button
-        android:id="@+id/cripto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/onOff"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="22dp"
-        android:text="cript" />
 
     <Button
         android:id="@+id/conversazioni"
