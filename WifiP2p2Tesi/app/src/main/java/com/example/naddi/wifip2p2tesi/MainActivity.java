@@ -3,9 +3,7 @@ package com.example.naddi.wifip2p2tesi;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -33,22 +31,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.spongycastle.bcpg.SymmetricEncDataPacket;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -194,9 +180,6 @@ public class MainActivity extends AppCompatActivity {
 
 
                 requ();
-
-
-
                     mManager.discoverPeers(mChanel, new WifiP2pManager.ActionListener() {
                         @Override
                         public void onSuccess() {
@@ -238,6 +221,22 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(int i) {
                         Toast.makeText(getApplicationContext(),"not connected",Toast.LENGTH_SHORT).show();
+                        sendReceive = new SendReceive(MESSAGE_READ,handler);
+                        requ();
+                        mManager.discoverPeers(mChanel, new WifiP2pManager.ActionListener() {
+                            @Override
+                            public void onSuccess() {
+                                connectionsStatus.setText("Discovery Started");
+                            }
+
+                            @Override
+                            public void onFailure(int i) {
+                                connectionsStatus.setText("Discovery start fail");
+                            }
+                        });
+
+
+
                     }
                 });
             }
@@ -266,6 +265,24 @@ public class MainActivity extends AppCompatActivity {
         btnConver.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                requ();
+
+
+
+                mManager.discoverPeers(mChanel, new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        connectionsStatus.setText("Discovery Started");
+                    }
+
+                    @Override
+                    public void onFailure(int i) {
+                        connectionsStatus.setText("Discovery start fail");
+                    }
+                });
+
+
                 setContentView(R.layout.conversazioni);
                 conversList = findViewById(R.id.convList);
                 conversList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -353,12 +370,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void chatWork(){
-        btnChatConnect = findViewById(R.id.reconnectionButton);
+        Button disconnect = findViewById(R.id.disconnect);
         chatMex = findViewById(R.id.chatList);
         mexText = findViewById(R.id.mexText);
         btnSend = findViewById(R.id.sendChat);
         chatList = findViewById(R.id.chatList);
         Button connect = findViewById(R.id.connect);
+
+
+        disconnect.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wifimanager.setWifiEnabled(false);
+                wifimanager.setWifiEnabled(true);
+
+
+            }
+        });
 
 
         connect.setOnClickListener(new OnClickListener() {
@@ -376,7 +404,22 @@ public class MainActivity extends AppCompatActivity {
                     }
                     @Override
                     public void onFailure(int i) {
+                        sendReceive = new SendReceive(MESSAGE_READ,handler);
                         Toast.makeText(getApplicationContext(),"not connected",Toast.LENGTH_SHORT).show();
+                        sendReceive = new SendReceive(MESSAGE_READ,handler);
+                        requ();
+                        mManager.discoverPeers(mChanel, new WifiP2pManager.ActionListener() {
+                            @Override
+                            public void onSuccess() {
+                                connectionsStatus.setText("Discovery Started");
+                            }
+
+                            @Override
+                            public void onFailure(int i) {
+                                connectionsStatus.setText("Discovery start fail");
+                            }
+                        });
+
                     }
                 });
 
@@ -454,25 +497,26 @@ public class MainActivity extends AppCompatActivity {
 
     //---------------------------------------LISTENER DELLA CONNESSIONE----------------------------------------------------------
     WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
-         @Override
+        @Override
         public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
 
-            final InetAddress groupOwnwerAndres =wifiP2pInfo.groupOwnerAddress;
+            final InetAddress groupOwnwerAndres = wifiP2pInfo.groupOwnerAddress;
 
-            if(wifiP2pInfo.groupFormed && wifiP2pInfo.isGroupOwner){
+            if ( wifiP2pInfo.groupFormed && wifiP2pInfo.isGroupOwner ) {
 
                 connectionsStatus.setText("host");
-                serverClass=new ServerClass(sendReceive);
+                serverClass = new ServerClass(sendReceive);
                 serverClass.start();
-                Toast.makeText(getApplicationContext(),"host",Toast.LENGTH_SHORT).show();
-            }else if (wifiP2pInfo.groupFormed){
-               // sendReceive = new SendReceive(MESSAGE_READ,handler);
-                connectionsStatus.setText("client");
+                Toast.makeText(getApplicationContext(), "host", Toast.LENGTH_SHORT).show();
 
-                clientClass = new ClientClass(groupOwnwerAndres,sendReceive);
+            } else if ( wifiP2pInfo.groupFormed ) {
+
+                connectionsStatus.setText("client");
+                clientClass = new ClientClass(groupOwnwerAndres, sendReceive);
                 clientClass.start();
-                Toast.makeText(getApplicationContext(),"client",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "client", Toast.LENGTH_SHORT).show();
             }
+
 
 
              Handler handler = new Handler();
